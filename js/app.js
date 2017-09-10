@@ -36,29 +36,39 @@ $.each(shuffleList, function(index, value) {
     $(".deck").append(print);
 });
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
-
-// click to show a card - method
-
+// open = add child to array + change class to open show
+// 1st click.. open. 2nd click.. open. 3rd click.. open.
+// on 3rd click --> check if 1st two are equal
+//    If equal --> change class to match, add to match, remove from array
+//    if not equal (to first two) --> remove from array, change class to card
+// When matchlist reaches 16 = everything unclickable + show new HTML
 var openList = [];
 var matchList = [];
 $(".card").click(function() {
     // reveal the card type and store it into empty list
-
     var cardOpen = $(this).toggleClass('open show').children();
-    var cardType = cardOpen.children();
-    openList.push(cardType);
-    console.log(openList);
+    openList.push(cardOpen);
+    // console.log(openList);
+    if (openList.length === 3) {
+        if (openList[0] === openList[1]) {
+            // change class to match
+            $(openList[0]).toggleClass('match');
+            $(openList[1]).toggleClass('match');
+            // add to matchList array
+            matchList.push(openList[0]);
+            matchList.push(openList[1]);
+            // remove from openList array
+            openList.shift();
+            openList.shift();
+        } else if (openList[0] != openList[1]) {
+            $(openList[0]).toggleClass('card');
+            $(openList[1]).toggleClass('card');
+            openList.shift();
+            openList.shift();
+        }
+    }
 
-
-
-
+    if (matchList.length === 16) {
+        alert("Game is done! You win");
+    }
 });
