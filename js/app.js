@@ -36,103 +36,79 @@ $.each(shuffleList, function(index, value) {
     $(".deck").append(print);
 });
 
-// on 1st click.. change class and push to open list
-// on 2nd click.. change class, push to open list AND
-// if openList length = 2, check for match via below >
-//          if no match.. hold for 1 sec, change class back and empty openList
-//          if match.. change class to match, add to matchlist and empty openList
+// if refresh button is clicked at any time
+var refresh = $('.restart');
+refresh.click(function() {
+    location.reload();
+});
+
+// initialise all variables
+var modal = $('#myModal').hide();
 var openList = [];
 var matchList = [];
+var startTime = 0;
+var numberClicks = 0;
+var starRating;
+
+// if click happens, then do this
 $('.card').click(function() {
+    // start timer with 1 sec interval
+    var runningTime = setInterval(function() {
+        startTime += 1;
+    }, 1000);
+
+    // increase click counter, change clicks and star rating on top
+    numberClicks++;
+    $('.moves').html(numberClicks);
+    if (numberClicks <= 22) {
+        starRating = 3;
+    } else if (numberClicks > 22 && numberClicks <= 28) {
+        starRating = 2;
+        $('.stars').children().first().remove();
+    } else if (numberClicks > 29) {
+        starRating = 1;
+        $('.stars').children().first().remove();
+    }
+
+    // play of cards open, close and match
     var clicked = $(this);
-    if (openList.length < 2) {
-        var cardOpen = clicked.toggleClass('open show').children();
-        openList.push(cardOpen);
-    } else if (openList.length === 2) {
-        // check for match if ($(this).hasClass("lol"))
+    var cardOpen = clicked.toggleClass('open show').children();
+    // push to open list
+    openList.push(cardOpen);
+    if (openList.length > 1) {
         a = openList[0].attr('class');
         b = openList[1].attr('class');
         if (a === b) {
-            $(openList[0]).parent().toggleClass('match');
-            $(openList[1]).parent().toggleClass('match');
+            // open show class and add to matchlist. empty list again
+            $(openList[0]).parent().removeClass('open show').addClass('match');
+            $(openList[1]).parent().removeClass('open show').addClass('match');
             matchList.push(openList[0]);
             matchList.push(openList[1]);
             openList = [];
         } else {
-            $(openList[0]).parent().removeClass('open show');
-            $(openList[1]).parent().removeClass('open show');
-            openList = [];
-        }
-    }
-
-    if (matchList.length === 16) {
-        alert("Game is done! You win");
-    }
-});
-
-
-
-
-/*
-var openList = [];
-var matchList = [];
-$(".card").click(function() {
-    var clicked = $(this);
-    if (openList.length < 2) {
-        // store child of card class and push to openList
-        if (!matchList.includes(clicked)) {
-            var cardOpen = clicked.toggleClass('open show').children();
-            openList.push(cardOpen);
-        }
-    } else if (openList.length === 2) {
-        // check if the two stored things match
-        if (openList[0] === openList[1]) {
-            // add to matchList, change class to match, empty openList
-            $(openList[0]).toggleClass('match');
-            $(openList[1]).toggleClass('match');
-            matchList.push(openList[0]);
-            matchList.push(openList[1]);
-            openList = [];
-        } else {
-            // remove open show after .5 secs and empty openlist
+            // revert to main class and empty list again, with .5 sec delay
             setTimeout(function() {
-                $(openList[0]).parent().removeClass('open show');
                 $(openList[1]).parent().removeClass('open show');
+                $(openList[0]).parent().removeClass('open show');
                 openList = [];
-            }, 300);
-        }
-
-    } else if (matchList.length === 16) {
-        alert("Game is done! You win");
-    }
-});
-*/
-
-/*
-    var cardOpen = $(this).toggleClass('open show').children();
-    openList.push(cardOpen);
-    // console.log(openList);
-    if (openList.length === 3) {
-        if (openList[0] === openList[1]) {
-            // change class to match
-            $(openList[0]).toggleClass('match');
-            $(openList[1]).toggleClass('match');
-            // add to matchList array
-            matchList.push(openList[0]);
-            matchList.push(openList[1]);
-            // remove from openList array
-            openList.shift();
-            openList.shift();
-        } else if (openList[0] != openList[1]) {
-            $(openList[0]).toggleClass('card');
-            $(openList[1]).toggleClass('card');
-            openList.shift();
-            openList.shift();
+            }, 500);
         }
     }
-
     if (matchList.length === 16) {
-        alert("Game is done! You win");
+        clearInterval(runningTime);
+        myModal.style.display = "block";
+        // display time in modal
+        var printTime = '<p>You took ' + startTime + ' seconds.</p>';
+        $('.modal-content').append(printTime);
+
+        // display star rating
+        var printStar = '<p>You get ' + starRating + ' stars as rating.</p>';
+        $('.modal-content').append(printStar);
+
+        // start game again on button press
+        $('.refreshButton').click(function() {
+            location.reload();
+        });
+
     }
 });
-*/
