@@ -52,10 +52,6 @@ var starRating;
 
 // if click happens, then do this
 $('.card').click(function() {
-    // start timer with 1 sec interval
-    var runningTime = setInterval(function() {
-        startTime += 1;
-    }, 1000);
 
     // increase click counter, change clicks and star rating on top
     numberClicks++;
@@ -75,6 +71,15 @@ $('.card').click(function() {
     var cardOpen = clicked.toggleClass('open show').children();
     // push to open list
     openList.push(cardOpen);
+
+    if (numberClicks === 1) {
+        // start timer with 1 sec interval
+        var runningTime = setInterval(function() {
+            startTime += 1;
+            $('.timer').html(startTime);
+        }, 1000);
+    };
+
     if (openList.length > 1) {
         a = openList[0].attr('class');
         b = openList[1].attr('class');
